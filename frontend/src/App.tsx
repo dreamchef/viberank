@@ -1,34 +1,82 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import './index.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+interface Result {
+  provider: string
+  text: string
+}
+
+function ResultCard({ result }: { result: Result }) {
+  const [expanded, setExpanded] = useState(false)
+  const lines = result.text.split('\n')
+  const preview = lines.slice(0, 3).join('\n')
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    <div className="result-card">
+      <div className="result-provider">{result.provider}</div>
+      <pre>{expanded ? result.text : preview}</pre>
+      {result.text.length > preview.length && (
+        <button className="show-more" onClick={() => setExpanded(!expanded)}>
+          {expanded ? 'Show Less' : 'Show More'}
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+      )}
+    </div>
+  )
+}
+
+function App() {
+  const [brand, setBrand] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [results, setResults] = useState<Result[]>([])
+
+  const search = async () => {
+    if (!brand) return
+    setLoading(true)
+    setResults([])
+    try {
+      const resp = await fetch(`/search?brand=${encodeURIComponent(brand)}`)
+      const data = await resp.json()
+      if (Array.isArray(data)) {
+        setResults(data)
+      } else {
+        setResults([data])
+      }
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const totalLength = results.reduce((acc, r) => acc + r.text.length, 0)
+
+  return (
+    <div className="container">
+      <h1>VibeRank</h1>
+      <div className="search-bar">
+        <input
+          value={brand}
+          onChange={(e) => setBrand(e.target.value)}
+          placeholder="Search brand"
+        />
+        <button onClick={search}>Search</button>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      {loading && <p>Loading...</p>}
+      {results.length > 0 && (
+        <>
+          <div className="results-grid">
+            {results.map((r, i) => (
+              <ResultCard key={i} result={r} />
+            ))}
+          </div>
+          <div className="analytics">
+            <h2>Analytics</h2>
+            <p>Sources: {results.length}</p>
+            <p>Total length: {totalLength} characters</p>
+          </div>
+        </>
+      )}
+    </div>
   )
 }
 

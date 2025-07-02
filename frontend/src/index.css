@@ -66,3 +66,62 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .results-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.result-card {
+  border: 1px solid #ccc;
+  background-color: #ffffff33;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  text-align: left;
+}
+
+.result-provider {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  text-transform: capitalize;
+}
+
+.show-more {
+  color: #646cff;
+  cursor: pointer;
+}
+
+.search-bar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.search-bar input {
+  flex: 1;
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  border: 1px solid #ccc;
+}
+
+.search-bar button {
+  padding: 0.5rem 1rem;
+}
+
+.analytics {
+  margin-top: 1rem;
+  text-align: left;
+}
